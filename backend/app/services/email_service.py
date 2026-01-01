@@ -11,12 +11,17 @@ class EmailService:
         Sends real emails via Gmail SMTP.
         For production, use environment variables for credentials.
         """
+        print(f"DEBUG: Attempting to send email to {to_email}")
+        
         # Use environment variables for Gmail credentials
         sender_email = os.getenv("SMTP_EMAIL")
         sender_password = os.getenv("SMTP_PASSWORD")
         
+        print(f"DEBUG: sender_email present? {bool(sender_email)}")
+        print(f"DEBUG: sender_password present? {bool(sender_password)}")
+        
         # If no credentials, fall back to mock
-        if sender_email == "your-email@gmail.com" or not sender_password:
+        if not sender_email or not sender_password:
             print(f"\n======== 📧 MOCK EMAIL (No SMTP Configured) ========")
             print(f"To: {to_email}")
             print(f"Subject: {subject}")
