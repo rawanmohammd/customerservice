@@ -35,14 +35,14 @@ def on_startup():
         print("🔥 Startup: DELETED ALL EMPLOYEES (Clean Slate) 🧹")
         
         # 2. SEED RAWAN (Test Employee)
-        statement = select(Employee).where(Employee.email == "mohammedrawan653@gmail.com")
+        statement = select(Employee).where(Employee.email == "mh0211077@gmail.com")
         existing = session.exec(statement).first()
         
         if not existing:
             print("🚀 Startup: Creating Test Employee (Rawan)...")
             test_employee = Employee(
                 name="Rawan (Test Lead)",
-                email="mohammedrawan653@gmail.com",
+                email="mh0211077@gmail.com",  # Resend verified email
                 department="ai",
                 role="senior",
                 is_active=True
