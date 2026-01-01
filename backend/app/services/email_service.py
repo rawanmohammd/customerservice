@@ -44,7 +44,7 @@ class EmailService:
             print(f"Content:\n{content}")
             print("====================================\n")
 
-   @staticmethod
+    @staticmethod
     def generate_html_report(report: dict) -> str:
         """Generate HTML email content from issue report."""
         return f"""
