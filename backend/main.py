@@ -73,10 +73,21 @@ def on_startup():
 @app.get("/version")
 def get_version():
     return {
-        "version": "1.5.0",
-        "last_updated": "2026-01-01 20:55",
-        "features": ["Email for ALL priorities", "Exclude Sarah fix", "Auto-seed Rawan"]
+        "version": "1.6.0 (NUCLEAR UPDATE)",
+        "last_updated": "2026-01-01 22:20",
+        "description": "Forced clean DB & Docker Rebuild"
     }
+
+@app.get("/verify-employees")
+def verify_employees():
+    """DIRECT endpoint in main.py to verify employees without routing issues."""
+    from sqlmodel import Session, select
+    from app.core.database import engine
+    from app.models.models import Employee
+    
+    with Session(engine) as session:
+        employees = session.exec(select(Employee)).all()
+        return employees
 
 # Register Routers
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
