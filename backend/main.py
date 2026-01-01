@@ -25,13 +25,14 @@ def on_startup():
     from app.models.models import Employee
     
     with Session(engine) as session:
-        # 1. PURGE SARAH (Mock Employee) - Explicit deletion
-        statement = select(Employee).where(Employee.name.contains("Sarah"))
-        sarah_list = session.exec(statement).all()
-        for sarah in sarah_list:
-            print(f"🔥 Startup: Removing Mock Employee '{sarah.name}'...")
-            session.delete(sarah)
+        # 1. PURGE ALL EMPLOYEES (Clean Slate) - Requested by User
+        # This ensures no old data (like Sarah) remains.
+        # Note: In a real production app, you wouldn't do this, but for this demo/testing phase it's perfect.
+        from sqlmodel import delete
+        statement = delete(Employee)
+        session.exec(statement)
         session.commit()
+        print("🔥 Startup: DELETED ALL EMPLOYEES (Clean Slate) 🧹")
         
         # 2. SEED RAWAN (Test Employee)
         statement = select(Employee).where(Employee.email == "mohammedrawan653@gmail.com")

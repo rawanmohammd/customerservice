@@ -8,9 +8,7 @@ router = APIRouter()
 
 @router.get("/recent", response_model=List[dict])
 def get_recent_issues_with_details(session: Session = Depends(get_session)):
-    """
-    Get recent issues WITH employee assignment details for debugging.
-    """
+    # ... (existing code for get_recent_issues_with_details) ...
     statement = select(Issue).order_by(Issue.id.desc()).limit(10)
     issues = session.exec(statement).all()
     
@@ -33,6 +31,12 @@ def get_recent_issues_with_details(session: Session = Depends(get_session)):
         })
     
     return result
+
+@router.get("/employees")
+def get_all_employees(session: Session = Depends(get_session)):
+    """Debug: List all employees in the database to verify cleanup."""
+    employees = session.exec(select(Employee)).all()
+    return employees
 
 @router.get("/send-test-email")
 def send_test_email():
