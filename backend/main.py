@@ -43,6 +43,14 @@ def on_startup():
         else:
             print(f"✅ Startup: Test Employee {existing.name} already exists.")
 
+@app.get("/version")
+def get_version():
+    return {
+        "version": "1.5.0",
+        "last_updated": "2026-01-01 20:55",
+        "features": ["Email for ALL priorities", "Exclude Sarah fix", "Auto-seed Rawan"]
+    }
+
 # Register Routers
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(issues.router, prefix="/api/issues", tags=["Issues"])
