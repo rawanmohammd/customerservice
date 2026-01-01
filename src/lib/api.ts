@@ -15,24 +15,44 @@ export interface Issue {
     created_at: string;
 }
 
+// Helper to get base URL
+const getBaseUrl = () => {
+    const url = import.meta.env.VITE_API_URL || '/api';
+    return url.replace(/\/$/, ''); // Remove trailing slash
+};
+
 export const API = {
     async sendMessage(message: string, userId: string = "guest"): Promise<ChatResponse> {
-        const baseUrl = import.meta.env.VITE_API_URL || '/api'; // Use env var in prod, proxy in dev
-
-        // Remove trailing slash if exists to avoid double slash
-        const url = `${baseUrl.replace(/\/$/, '')}/chat`;
+        // FastAPI expects trailing slash by default -> /chat/
+        const url = `${getBaseUrl()}/chat/`;
 
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message, user_id: userId })
         });
-        if (!res.ok) throw new Error('Network error');
+
+        // Handle 307 Redirects explicitly if fetch doesn't
+        if (res.status === 307) {
+            const newUrl = res.headers.get('Location');
+            if (newUrl) {
+                return (await fetch(newUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, user_id: userId })
+                })).json();
+            }
+        }
+
+        if (!res.ok) throw new Error(`Network error: ${res.status}`);
         return res.json();
     },
 
     async getIssues(): Promise<Issue[]> {
-        const res = await fetch('/api/issues');
+        // FastAPI expects trailing slash -> /issues/
+        const url = `${getBaseUrl()}/issues/`;
+
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Network error');
         return res.json();
     }
