@@ -18,6 +18,7 @@ class ChatResponse(BaseModel):
     action: str  # 'reply' or 'escalate'
     text: str
     report: Optional[Dict[str, Any]] = None
+    escalation: Optional[Dict[str, Any]] = None
 
 from app.services.email_service import EmailService
 
@@ -69,9 +70,20 @@ async def chat_interaction(request: ChatRequest, session: Session = Depends(get_
                 )
                 ai_response["text"] += f"\n\n(Notification: Email sent to {assigned_emp.name})"
             
+            # Add escalation metadata for testing/frontend
+            ai_response["escalation"] = {
+                "department": report["department"],
+                "priority": report["priority"],
+                "escalated": True
+            }
+            
             # Append assignment info to response (for demo purpose)
-            elif assigned_emp:
+            if assigned_emp:
                 ai_response["text"] += f"\n\n(Internal: Assigned to {assigned_emp.name} in {assigned_emp.department})"
+        else:
+            ai_response["escalation"] = {
+                "escalated": False
+            }
         
         return ai_response
 
