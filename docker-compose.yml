@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: zedny-ai-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      - ./backend/app/core/knowledge_base.json:/app/app/core/knowledge_base.json # Persist KB edits
+    networks:
+      - zedny-network
+    restart: always
+
+  frontend:
+    build: .
+    container_name: zedny-ai-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - zedny-network
+    restart: always
+
+networks:
+  zedny-network:
+    driver: bridge

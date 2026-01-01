@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+sqlmodel
+python-multipart
+email-validator
+sentence-transformers
+scikit-learn
+numpy
+groq
+python-dotenv
