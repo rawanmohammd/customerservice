@@ -5,7 +5,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Go up two levels from app/core/ to backend/
 BACKEND_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
-DB_Name = "database.db"
+DB_Name = "production.db"  # Fresh database for persistent real emails
 DB_PATH = os.path.join(BACKEND_DIR, DB_Name)
 sqlite_url = f"sqlite:///{DB_PATH}"
 
