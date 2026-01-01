@@ -17,7 +17,7 @@ COPY backend/ .
 EXPOSE 7860
 
 # Force Cache Bust via Env Var
-ENV CACHE_BUST="2026-01-01T22:45"
+ENV CACHE_BUST="2026-01-02T01:10"
 
 # Run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]

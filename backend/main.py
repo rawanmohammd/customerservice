@@ -73,9 +73,9 @@ def on_startup():
 @app.get("/version")
 def get_version():
     return {
-        "version": "1.6.0 (NUCLEAR UPDATE)",
-        "last_updated": "2026-01-01 22:20",
-        "description": "Forced clean DB & Docker Rebuild"
+        "version": "1.7.0 (METADATA FIX)",
+        "last_updated": "2026-01-02 01:10",
+        "description": "Added escalation metadata to chat response"
     }
 
 @app.get("/verify-employees")
