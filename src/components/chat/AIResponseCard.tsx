@@ -26,7 +26,7 @@ export function AIResponseCard({ data }: AIResponseProps) {
                         <span>Key Insights</span>
                     </div>
                     <ul className="space-y-2">
-                        {data.points.map((point, idx) => (
+                        {(data.points || []).map((point, idx) => (
                             <li key={idx} className="flex items-start space-x-3 text-sm text-brand-text-body">
                                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-brand-secondary flex-shrink-0" />
                                 <span>{point}</span>
@@ -41,7 +41,7 @@ export function AIResponseCard({ data }: AIResponseProps) {
                         <span>Recommended Steps</span>
                     </div>
                     <div className="grid gap-3">
-                        {data.steps.map((step, idx) => (
+                        {(data.steps || []).map((step, idx) => (
                             <div key={idx} className="group flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:border-brand-secondary/30 hover:bg-brand-secondary/5 transition-all cursor-pointer">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-medium group-hover:bg-brand-secondary group-hover:text-white transition-colors">
