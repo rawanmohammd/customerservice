@@ -51,6 +51,24 @@ def on_startup():
         else:
             print(f"✅ Startup: Test Employee {existing.name} already exists.")
 
+        # 3. SEED OPERATIONS MANAGER (New Request)
+        statement = select(Employee).where(Employee.email == "mohammedraab635@gmail.com")
+        ops_existing = session.exec(statement).first()
+        
+        if not ops_existing:
+            print("🚀 Startup: Creating Operations Manager...")
+            ops_employee = Employee(
+                name="Mohammed (Ops Manager)",
+                email="mohammedraab635@gmail.com",
+                department="operations",
+                role="manager",
+                is_active=True
+            )
+            session.add(ops_employee)
+            session.commit()
+        else:
+            print(f"✅ Startup: Operations Manager {ops_existing.name} already exists.")
+
 @app.get("/version")
 def get_version():
     return {

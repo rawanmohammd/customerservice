@@ -53,6 +53,7 @@ DEPARTMENTS:
 - "web" = [Conceptual] Any technical inquiry relative to websites, web applications, frontend (UI/UX), backend (API, DB), browsers, or hosting. Includes visual bugs, functionality errors, and feature requests for web platforms.
 - "ai" = [Conceptual] Any inquiry related to Artificial Intelligence, Machine Learning, Data Science, predictive models, chatbots, or data analytics.
 - "commercial" = [Conceptual] Business-related inquiries involved money, contracts, account plans, billing cycles, or legal agreements.
+- "operations" = [Conceptual] Logistics, shipping, delivery systems, account management, operational support, or physical infrastructure.
 - "general" = [Conceptual] Non-technical inquiries about the company itself (location, hours), partnerships, or unclassified non-technical issues.
 
 PRIORITY LEVELS:
