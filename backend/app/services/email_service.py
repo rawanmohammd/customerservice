@@ -12,8 +12,8 @@ class EmailService:
         For production, use environment variables for credentials.
         """
         # Use environment variables for Gmail credentials
-        sender_email = os.getenv("SMTP_EMAIL", "your-email@gmail.com")
-        sender_password = os.getenv("SMTP_PASSWORD", "your-app-password")
+        sender_email = os.getenv("SMTP_EMAIL")
+        sender_password = os.getenv("SMTP_PASSWORD")
         
         # If no credentials, fall back to mock
         if sender_email == "your-email@gmail.com" or not sender_password:
