@@ -59,6 +59,7 @@ async def chat_interaction(request: ChatRequest, session: Session = Depends(get_
             
             # 3. NOTIFY via Email (If High Priority)
             # 3. NOTIFY via Email (For ALL escalations during demo)
+            print(f"DEBUG: Checking email logic. Priority: {report['priority']}, Assigned: {assigned_emp}")
             if assigned_emp:
                 email_body = EmailService.generate_html_report(report)
                 EmailService.send_notification(
