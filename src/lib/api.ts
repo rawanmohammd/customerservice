@@ -49,11 +49,18 @@ export const API = {
     },
 
     async getIssues(): Promise<Issue[]> {
-        // FastAPI expects trailing slash -> /issues/
-        const url = `${getBaseUrl()}/issues/`;
+        try {
+            // FastAPI expects trailing slash -> /issues/
+            const url = `${getBaseUrl()}/issues/`;
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Network error');
-        return res.json();
+            const res = await fetch(url);
+            if (!res.ok) return []; // Return empty array on error
+
+            const data = await res.json();
+            return Array.isArray(data) ? data : []; // Verify it's an array
+        } catch (e) {
+            console.error("Failed to fetch issues:", e);
+            return []; // Safe fallback
+        }
     }
 };

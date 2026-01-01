@@ -12,6 +12,8 @@ export function Dashboard() {
         const fetchIssues = async () => {
             try {
                 const issues = await API.getIssues();
+                if (!Array.isArray(issues)) return; // Stop if not array
+
                 const mapped = issues.map(i => ({
                     id: i.id.toString(),
                     clientId: "Client #" + (i.assigned_to || "?"),
