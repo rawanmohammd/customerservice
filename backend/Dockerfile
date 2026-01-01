@@ -16,5 +16,8 @@ COPY . .
 # Expose port (Hugging Face Spaces defaults to 7860)
 EXPOSE 7860
 
+# Force Cache Bust via Env Var (Update this to trigger rebuild)
+ENV CACHE_BUST="2026-01-01T22:15"
+
 # Run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
