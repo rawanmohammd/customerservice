@@ -58,14 +58,15 @@ async def chat_interaction(request: ChatRequest, session: Session = Depends(get_
             session.commit()
             
             # 3. NOTIFY via Email (If High Priority)
-            if report["priority"] == "high" and assigned_emp:
+            # 3. NOTIFY via Email (For ALL escalations during demo)
+            if assigned_emp:
                 email_body = EmailService.generate_html_report(report)
                 EmailService.send_notification(
                     to_email=assigned_emp.email,
-                    subject=f"🚨 URGENT: New {report['department']} Issue Assigned",
+                    subject=f"📢 New Issue: {report['department']} - Priority: {report['priority'].upper()}",
                     content=email_body
                 )
-                ai_response["text"] += "\n\n(Alert: An urgent email has been sent to " + assigned_emp.name + ")"
+                ai_response["text"] += f"\n\n(Notification: Email sent to {assigned_emp.name})"
             
             # Append assignment info to response (for demo purpose)
             elif assigned_emp:
