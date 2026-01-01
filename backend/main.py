@@ -25,7 +25,15 @@ def on_startup():
     from app.models.models import Employee
     
     with Session(engine) as session:
-        # Check if Rawan exists
+        # 1. PURGE SARAH (Mock Employee) - Explicit deletion
+        statement = select(Employee).where(Employee.name.contains("Sarah"))
+        sarah_list = session.exec(statement).all()
+        for sarah in sarah_list:
+            print(f"🔥 Startup: Removing Mock Employee '{sarah.name}'...")
+            session.delete(sarah)
+        session.commit()
+        
+        # 2. SEED RAWAN (Test Employee)
         statement = select(Employee).where(Employee.email == "mohammedrawan653@gmail.com")
         existing = session.exec(statement).first()
         
