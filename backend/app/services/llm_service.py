@@ -29,7 +29,7 @@ class LLMService:
     def decide_next_step(cls, history: List[Dict[str, str]], rag_context: str = None) -> Dict[str, Any]:
         """
         Analyze history and decide: Clarify, Answer, or Escalate.
-        Includes RAG context to ensure AI knows company-specific info.
+        Uses RAG context to synthesize a helpful response.
         """
         client = cls.get_client()
         
@@ -40,22 +40,26 @@ Your goal is to decide if you have enough information to either:
 3. ASK_QUESTION: Request is vague or missing key details.
 4. ACKNOWLEDGE: Info added to an existing escalation.
 
-=== KNOWLEDGE BASE (Use this to ANSWER if relevant) ===
+=== KNOWLEDGE BASE (CRITICAL: Use this to answer if relevant) ===
 {rag_context if rag_context else "No specific knowledge found for this query."}
+
+=== REASONING & LOGIC RULES ===
+- If the user asks about availability on a specific day (e.g., "Friday"), check the KB for office hours and explain if they'll find anyone.
+- If the user asks about timelines (e.g., "4-6 weeks"), perform the mental math based on the current date (Jan 2026) to give an estimated launch range.
+- Do NOT use placeholders like "Use the info from KB". Write the actual answer for the user.
 
 === LOOP PREVENTION ===
 If the user already answered a question or you have asked the SAME clarification twice, do NOT ask again. ESCALATE to a human instead.
 
-=== RULES ===
-- If the user provides specific details (e.g., "Error 500", "Site down") -> action: "escalate"
-- If the knowledge base has a clear answer -> action: "answer", text: "Use the info from KB"
-- If it was ALREADY escalated -> action: "answer", text: "Acknowledged, I've updated the team."
-- Respond in the language used by the customer (Arabic/English). Avoid over-formal language in Arabic; be helpful and natural.
+=== RESPONSE RULES ===
+- If escalating -> action: "escalate", text: "Explain why you are escalating in a helpful way."
+- If answering -> action: "answer", text: "The actual answer synthesized from KB or general knowledge."
+- Respond in the language used by the customer. Be natural and professional.
 
 Response must be ONLY valid JSON:
 {{
   "action": "<ask_question|escalate|answer>",
-  "text": "<The message to show to the user in their language>",
+  "text": "<Full response text in customer's language>",
   "reasoning": "<brief intent analysis>"
 }}
 """
