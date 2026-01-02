@@ -24,9 +24,72 @@ class LLMService:
                 raise ValueError("GROQ_API_KEY not found in environment variables")
             cls._client = Groq(api_key=api_key)
         return cls._client
-    
+
+    @classmethod
+    def decide_next_step(cls, history_messages: list) -> Dict[str, Any]:
+        """
+        Analyzes the conversation history and decides the best next action.
+        Returns: {
+            "action": "ask_question" | "escalate" | "answer",
+            "text": "The follow-up question or answer",
+            "classification": { ... } # if escalating
+        }
+        """
+        system_prompt = """You are a smart Customer Service Coordinator for ZEdny (Software Company).
+Your goal is to decide if you have enough information to either:
+1. ANSWER the customer's question directly (if generic).
+2. ESCALATE the issue to a human expert (if technical and detailed).
+3. ASK a clarifying question (if the request is too vague or missing details).
+4. ACKNOWLEDGE additional info (if the issue was already escalated in previous turns).
+
+CRITICAL DATA NEEDED FOR ESCALATION:
+- What exactly is the problem?
+- Which system/department is affected (Web, AI, Operations)?
+- How urgent is it?
+
+RULES:
+- If the user says "Hello" or generic greeting -> action: "answer", text: "Welcome! How can I help you today?"
+- If the user says "It's not working" -> action: "ask_question", text: "I'm sorry to hear that. Could you please specify what exactly isn't working? (e.g., a specific page, a feature, or an error code)"
+- If the user provides specific details (e.g., "Error 500 on login page") AND it wasn't already escalated -> action: "escalate"
+- If the issue was ALREADY escalated in history -> action: "answer", text: "Thank you for the additional information. I've updated our team with these details."
+- If the user is angry or says "Human please" -> action: "escalate"
+
+Response must be ONLY valid JSON:
+{
+  "action": "<ask_question|escalate|answer>",
+  "text": "<The message to show to the user in the language used by the customer>",
+  "reasoning": "<why you chose this action>"
+}
+"""
+        try:
+            client = cls.get_client()
+            
+            # Format history for LLM
+            # history_messages is a list of ChatMessage-like objects
+            formatted_history = []
+            for msg in history_messages[-6:]: # Last 6 messages for context
+                formatted_history.append({"role": msg["role"], "content": msg["content"]})
+
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    *formatted_history
+                ],
+                temperature=0.2,
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            return result
+            
+        except Exception as e:
+            print(f"❌ LLM Decide Error: {str(e)}")
+            return {"action": "answer", "text": "I'm having a bit of trouble processing that. Could you try rephrasing?"}
+
     @classmethod
     def classify_message(cls, message: str) -> Dict[str, Any]:
+        # ... existing implementation ...
         """
         Analyze customer message using Groq LLM.
         Returns structured classification data.

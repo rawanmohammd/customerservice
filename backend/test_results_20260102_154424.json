@@ -1,0 +1,52 @@
+[
+  {
+    "test_id": 1,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 2,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 3,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 4,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 5,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 6,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 7,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 8,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 9,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  },
+  {
+    "test_id": 10,
+    "status": "ERROR",
+    "error": "HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/chat/ (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+  }
+]

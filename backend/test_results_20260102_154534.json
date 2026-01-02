@@ -1,0 +1,169 @@
+[
+  {
+    "test_id": 1,
+    "category": "Ambiguous",
+    "department_actual": "web",
+    "department_expected": [
+      "web",
+      "ai"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "medium",
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 2,
+    "category": "Very Generic",
+    "department_actual": "general",
+    "department_expected": [
+      "general"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "medium"
+    ],
+    "priority_correct": false,
+    "escalated": true,
+    "status": "FAIL"
+  },
+  {
+    "test_id": 3,
+    "category": "Multi-Department",
+    "department_actual": "web",
+    "department_expected": [
+      "web",
+      "ai"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 4,
+    "category": "Operations + Commercial",
+    "department_actual": "web",
+    "department_expected": [
+      "operations",
+      "commercial"
+    ],
+    "department_correct": false,
+    "priority_actual": "high",
+    "priority_expected": [
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "FAIL"
+  },
+  {
+    "test_id": 5,
+    "category": "Not Urgent Feature",
+    "department_actual": "web",
+    "department_expected": [
+      "web"
+    ],
+    "department_correct": true,
+    "priority_actual": "low",
+    "priority_expected": [
+      "low",
+      "medium"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 6,
+    "category": "Fake Urgency",
+    "department_actual": "web",
+    "department_expected": [
+      "general"
+    ],
+    "department_correct": false,
+    "priority_actual": "high",
+    "priority_expected": [
+      "low",
+      "medium"
+    ],
+    "priority_correct": false,
+    "escalated": true,
+    "status": "FAIL"
+  },
+  {
+    "test_id": 7,
+    "category": "Egyptian Dialect",
+    "department_actual": "web",
+    "department_expected": [
+      "web"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 8,
+    "category": "Arabic + English Mix",
+    "department_actual": "ai",
+    "department_expected": [
+      "ai"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 9,
+    "category": "Very Long Query",
+    "department_actual": "ai",
+    "department_expected": [
+      "ai"
+    ],
+    "department_correct": true,
+    "priority_actual": "high",
+    "priority_expected": [
+      "high"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "PASS"
+  },
+  {
+    "test_id": 10,
+    "category": "No Context",
+    "department_actual": "web",
+    "department_expected": [
+      "general"
+    ],
+    "department_correct": false,
+    "priority_actual": "medium",
+    "priority_expected": [
+      "low",
+      "medium"
+    ],
+    "priority_correct": true,
+    "escalated": true,
+    "status": "FAIL"
+  }
+]

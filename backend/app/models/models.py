@@ -30,3 +30,10 @@ class Issue(SQLModel, table=True):
     
     created_at: datetime = Field(default_factory=datetime.utcnow)
     ai_summary: Optional[str] = None
+
+class ChatMessage(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    session_id: str = Field(index=True)
+    role: str # 'user' or 'assistant'
+    content: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)

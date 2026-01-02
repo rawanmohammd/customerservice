@@ -1,4 +1,5 @@
 from typing import Dict, Any
+from sqlmodel import Session
 from .vector_service import VectorService
 from .dummy_rag import MockRAG
 from .llm_service import LLMService
@@ -9,61 +10,86 @@ class AIService:
     """
 
     @classmethod
-    def process_message(cls, message: str) -> Dict[str, Any]:
+    def process_message(cls, message: str, session_id: str, db_session: Session) -> Dict[str, Any]:
         """
-        1. Semantic Search (Vector DB)
-        2. If Solution Found -> Reply
-        3. If Not Found -> Classify & Escalate
+        1. Save User Message to History
+        2. Check for explicit "Escalate" intent or RAG match.
+        3. If no simple answer, use LLM to decide: Follow-up OR Escalate.
         """
-    @classmethod
-    def process_message(cls, message: str) -> Dict[str, Any]:
-        """
-        1. Check for explicit "Escalate/Did not work" intent.
-        2. Semantic Search (RAG) - Even if urgent.
-        3. If no RAG match -> Classify & Escalate.
-        """
+        from app.models.models import ChatMessage
+        import json
+
+        # 1. Save User Message
+        user_msg = ChatMessage(session_id=session_id, role="user", content=message)
+        db_session.add(user_msg)
+        db_session.commit()
+
+        # 2. Get History
+        from sqlmodel import select
+        statement = select(ChatMessage).where(ChatMessage.session_id == session_id).order_by(ChatMessage.created_at)
+        history_objs = db_session.exec(statement).all()
+        history = [{"role": m.role, "content": m.content} for m in history_objs]
+
         message_lower = message.lower()
         
-        # 0. Check if user is explicitly asking for human or complaining about previous answer
-        # Removed "support" as it triggered false positives (e.g. "Do you provide support?")
+        # 0. Check if user is explicitly asking for human
         force_escalate = any(w in message_lower for w in ["human", "agent", "didn't work", "not helpful", "escalate", "speak to"])
         
         if not force_escalate:
-            # 1. Semantic Search (The Smart Way)
-            # We check RAG first, even if they say "Urgent".
-            # Example: "Urgent, how do I reset password?" -> Should just answer.
+            # 1. Semantic Search (RAG)
             vector_result = VectorService.search(message, threshold=0.2)
             
-            if vector_result:
-                doc = vector_result["doc"]
-                score = vector_result["score"]
+            if vector_result and vector_result["score"] > 0.82:
+                answer_text = vector_result["doc"]["text"]
+                # Save AI Response
+                ai_msg = ChatMessage(session_id=session_id, role="assistant", content=answer_text)
+                db_session.add(ai_msg)
+                db_session.commit()
                 
-                # If good match, return it.
-                # Raised threshold to 0.82 to reduce false positives (e.g. "fix printer" matching "bug fix" at 0.81)
-                if score > 0.82: 
-                    return {
-                        "action": "reply",
-                        "text": doc["text"],
-                        "source": "vector_db",
-                        "confidence": score
-                    }
+                return {
+                    "action": "reply",
+                    "text": answer_text,
+                    "source": "vector_db",
+                    "confidence": vector_result["score"]
+                }
         
-        # 2. Fallback: Classify & Escalate
-        # This happens if:
-        # a) User forced escalation ("Human please")
-        # b) RAG found nothing relevant (Score < 0.22)
-        classification = LLMService.classify_message(message)
+        # 2. Multi-turn Brain: Decide next step
+        decision = LLMService.decide_next_step(history)
         
+        if decision["action"] == "escalate" or force_escalate:
+            # Full classification for the final report
+            classification = LLMService.classify_message(message)
+            
+            escalation_text = decision.get("text", "I am forwarding your request to our team.")
+            if force_escalate:
+                 escalation_text = "I understand you'd like to speak with a human. I'm escalating this to our team right away."
+
+            # Save AI Response
+            ai_msg = ChatMessage(session_id=session_id, role="assistant", content=escalation_text)
+            db_session.add(ai_msg)
+            db_session.commit()
+
+            return {
+                "action": "escalate",
+                "report": {
+                    "summary": classification["summary"],
+                    "department": classification["department"],
+                    "priority": classification["priority"],
+                    "extracted_info": classification["technical_details"],
+                    "suggested_fix": "Investigate conversation history and logs."
+                },
+                "text": escalation_text
+            }
+        
+        # 3. Handle Questioning or Generic Answer
+        reply_text = decision["text"]
+        ai_msg = ChatMessage(session_id=session_id, role="assistant", content=reply_text)
+        db_session.add(ai_msg)
+        db_session.commit()
+
         return {
-            "action": "escalate",
-            "report": {
-                "summary": classification["summary"],
-                "department": classification["department"],
-                "priority": classification["priority"],
-                "extracted_info": classification["technical_details"],
-                "suggested_fix": "Investigate logs and contacting client."
-            },
-            "text": "I have collected the necessary details. I am forwarding this to our " + classification["department"] + " team immediately."
+            "action": "reply",
+            "text": reply_text
         }
     
     @staticmethod

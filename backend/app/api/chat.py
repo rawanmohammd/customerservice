@@ -11,6 +11,7 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
+    session_id: Optional[str] = "default-session"
     user_id: Optional[str] = "guest"
     client_email: Optional[str] = None
 
@@ -32,7 +33,7 @@ async def chat_interaction(request: ChatRequest, session: Session = Depends(get_
     """
     try:
         # 1. AI Analysis
-        ai_response = AIService.process_message(request.message)
+        ai_response = AIService.process_message(request.message, request.session_id, session)
         
         # 2. If Escalate, Save to DB
         if ai_response["action"] == "escalate":
