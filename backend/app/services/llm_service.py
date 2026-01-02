@@ -26,48 +26,45 @@ class LLMService:
         return cls._client
 
     @classmethod
-    def decide_next_step(cls, history_messages: list) -> Dict[str, Any]:
+    def decide_next_step(cls, history: List[Dict[str, str]], rag_context: str = None) -> Dict[str, Any]:
         """
-        Analyzes the conversation history and decides the best next action.
-        Returns: {
-            "action": "ask_question" | "escalate" | "answer",
-            "text": "The follow-up question or answer",
-            "classification": { ... } # if escalating
-        }
+        Analyze history and decide: Clarify, Answer, or Escalate.
+        Includes RAG context to ensure AI knows company-specific info.
         """
-        system_prompt = """You are a smart Customer Service Coordinator for ZEdny (Software Company).
+        client = cls.get_client()
+        
+        system_prompt = f"""You are a smart Customer Service Coordinator for ZEdny (Software Company).
 Your goal is to decide if you have enough information to either:
-1. ANSWER the customer's question directly (if generic).
-2. ESCALATE the issue to a human expert (if technical and detailed).
-3. ASK a clarifying question (if the request is too vague or missing details).
-4. ACKNOWLEDGE additional info (if the issue was already escalated in previous turns).
+1. ANSWER: Giving a direct answer (Generic or using provided KNOWLEDGE BASE).
+2. ESCALATE: Issue is technical/commercial and clear enough for a human.
+3. ASK_QUESTION: Request is vague or missing key details.
+4. ACKNOWLEDGE: Info added to an existing escalation.
 
-CRITICAL DATA NEEDED FOR ESCALATION:
-- What exactly is the problem?
-- Which system/department is affected (Web, AI, Operations)?
-- How urgent is it?
+=== KNOWLEDGE BASE (Use this to ANSWER if relevant) ===
+{rag_context if rag_context else "No specific knowledge found for this query."}
 
-RULES:
-- If the user says "Hello" or generic greeting -> action: "answer", text: "Welcome! How can I help you today?"
-- If the user says "It's not working" -> action: "ask_question", text: "I'm sorry to hear that. Could you please specify what exactly isn't working? (e.g., a specific page, a feature, or an error code)"
-- If the user provides specific details (e.g., "Error 500 on login page") AND it wasn't already escalated -> action: "escalate"
-- If the issue was ALREADY escalated in history -> action: "answer", text: "Thank you for the additional information. I've updated our team with these details."
-- If the user is angry or says "Human please" -> action: "escalate"
+=== LOOP PREVENTION ===
+If the user already answered a question or you have asked the SAME clarification twice, do NOT ask again. ESCALATE to a human instead.
+
+=== RULES ===
+- If the user provides specific details (e.g., "Error 500", "Site down") -> action: "escalate"
+- If the knowledge base has a clear answer -> action: "answer", text: "Use the info from KB"
+- If it was ALREADY escalated -> action: "answer", text: "Acknowledged, I've updated the team."
+- Respond in the language used by the customer (Arabic/English). Avoid over-formal language in Arabic; be helpful and natural.
 
 Response must be ONLY valid JSON:
-{
+{{
   "action": "<ask_question|escalate|answer>",
-  "text": "<The message to show to the user in the language used by the customer>",
-  "reasoning": "<why you chose this action>"
-}
+  "text": "<The message to show to the user in their language>",
+  "reasoning": "<brief intent analysis>"
+}}
 """
         try:
-            client = cls.get_client()
             
             # Format history for LLM
-            # history_messages is a list of ChatMessage-like objects
+            # history is a list of ChatMessage-like objects
             formatted_history = []
-            for msg in history_messages[-6:]: # Last 6 messages for context
+            for msg in history[-6:]: # Last 6 messages for context
                 formatted_history.append({"role": msg["role"], "content": msg["content"]})
 
             response = client.chat.completions.create(

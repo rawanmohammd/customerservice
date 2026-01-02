@@ -33,28 +33,24 @@ class AIService:
         message_lower = message.lower()
         
         # 0. Check if user is explicitly asking for human
-        force_escalate = any(w in message_lower for w in ["human", "agent", "didn't work", "not helpful", "escalate", "speak to"])
+        force_escalate = any(w in message_lower for w in ["human", "agent", "didn't work", "not helpful", "escalate", "speak to", "مدير", "بني آدم"])
         
-        if not force_escalate:
-            # 1. Semantic Search (RAG)
-            vector_result = VectorService.search(message, threshold=0.2)
+        # 1. Semantic Search (RAG) - Get context even if score is medium
+        vector_result = VectorService.search(message, threshold=0.1) # Aggressive search for context
+        rag_context = None
+        if vector_result:
+            rag_context = f"Topic: {vector_result['doc'].get('category')}\nContent: {vector_result['doc']['text']}"
             
-            if vector_result and vector_result["score"] > 0.82:
+            # Fast Path: If VERY high confidence, answer directly
+            if not force_escalate and vector_result["score"] > 0.88:
                 answer_text = vector_result["doc"]["text"]
-                # Save AI Response
                 ai_msg = ChatMessage(session_id=session_id, role="assistant", content=answer_text)
                 db_session.add(ai_msg)
                 db_session.commit()
-                
-                return {
-                    "action": "reply",
-                    "text": answer_text,
-                    "source": "vector_db",
-                    "confidence": vector_result["score"]
-                }
-        
-        # 2. Multi-turn Brain: Decide next step
-        decision = LLMService.decide_next_step(history)
+                return {"action": "reply", "text": answer_text, "source": "vector_db"}
+
+        # 2. Multi-turn Brain: Decide next step (Now with Knowledge Base!)
+        decision = LLMService.decide_next_step(history, rag_context=rag_context)
         
         if decision["action"] == "escalate" or force_escalate:
             # Full classification for the final report

@@ -2,100 +2,145 @@ import requests
 import json
 from datetime import datetime
 
-# API Endpoint - Using Localhost for verification
-API_URL = "http://localhost:8000/api/chat/"
-TIMEOUT = 120  # Increased for slow local LLM
+# API Endpoint - Using Hugging Face deployment
+API_URL = "https://rawanpo-zedny-ai.hf.space/api/chat/"
+TIMEOUT = 120  # 2 minutes for slow LLM responses
 
 # Test Cases
 test_cases = [
     {
         "id": 1,
-        "category": "Ambiguous",
-        "message": "الموقع بطيء جداً، وأحياناً البوت مش بيرد. محتاج حل سريع.",
+        "category": "RAG - Password Reset",
+        "message": "I forgot my password, how can I reset it?",
         "expected": {
-            "department": ["web", "ai"],
-            "priority": ["medium", "high"]
+            "action": "reply",
+            "contains": "Forgot Password"
         }
     },
     {
         "id": 2,
-        "category": "Very Generic",
-        "message": "عندنا مشكلة كبيرة في النظام. ممكن حد يساعدنا؟",
+        "category": "RAG - Company Location",
+        "message": "Where is ZEdny HQ located?",
         "expected": {
-            "department": ["general"],
-            "priority": ["medium"]
+            "action": "reply",
+            "contains": "New Cairo"
         }
     },
     {
         "id": 3,
-        "category": "Multi-Department",
-        "message": "الشات بوت مش بيرد زي الأول، وكمان الموقع بيطلع error 404 لما أدوس على صفحة المنتجات. محتاجين نصلح ده قبل إطلاق الكامبين بكرة.",
+        "category": "RAG - Business Hours",
+        "message": "What are your working hours?",
+        "expected": {
+            "action": "reply",
+            "contains": "Sunday to Thursday"
+        }
+    },
+    {
+        "id": 4,
+        "category": "RAG - Timeline",
+        "message": "How long does a corporate website take?",
+        "expected": {
+            "action": "reply",
+            "contains": "4-6 weeks"
+        }
+    },
+    {
+        "id": 5,
+        "category": "Department - Web Bug",
+        "message": "The login button is not clicking on mobile Chrome.",
+        "expected": {
+            "department": ["web"],
+            "priority": ["high", "medium"]
+        }
+    },
+    {
+        "id": 6,
+        "category": "Department - AI Service",
+        "message": "We want to build a custom recommendation model for our e-commerce.",
+        "expected": {
+            "department": ["ai"],
+            "priority": ["medium", "low"]
+        }
+    },
+    {
+        "id": 7,
+        "category": "Department - Commercial/Billing",
+        "message": "I want to upgrade my plan and need the bank transfer details.",
+        "expected": {
+            "department": ["commercial"],
+            "priority": ["medium", "high"]
+        }
+    },
+    {
+        "id": 8,
+        "category": "Ambiguous/Multi-turn",
+        "message": "It's not working",
+        "expected": {
+            "action": "reply", # Should ask clarifying question
+            "contains": "specify"
+        }
+    },
+    {
+        "id": 9,
+        "category": "Department - Operations",
+        "message": "The delivery tracking for my hardware order is stuck.",
+        "expected": {
+            "department": ["operations"],
+            "priority": ["high", "medium"]
+        }
+    },
+    {
+        "id": 10,
+        "category": "Dialect - Egyptian",
+        "message": "الموقع واقع خالص يا جماعة، إلحقونا.",
+        "expected": {
+            "department": ["web"],
+            "priority": ["high"]
+        }
+    },
+    {
+        "id": 11,
+        "category": "Long Technical Query",
+        "message": "Our React frontend is showing a hydration error specifically in the production build on Vercel, but works fine locally. We upgraded to Next.js 14 and since then the AI widget is causing mismatches.",
         "expected": {
             "department": ["web", "ai"],
             "priority": ["high"]
         }
     },
     {
-        "id": 4,
-        "category": "Operations + Commercial",
-        "message": "عندنا 500 طلب معلقين في السيستم، والتحصيل متوقف. الكلاينت زعلانين جداً وبيهددوا بإلغاء العقد.",
+        "id": 12,
+        "category": "RAG - Maintenance",
+        "message": "Do you provide support after the project is live?",
         "expected": {
-            "department": ["operations", "commercial"],
-            "priority": ["high"]
+            "action": "reply",
+            "contains": "post-launch support"
         }
     },
     {
-        "id": 5,
-        "category": "Not Urgent Feature",
-        "message": "نفسي نضيف feature جديدة للموقع: فلترة المنتجات حسب السعر. مش مستعجل بس لو تقدروا تعملوها خلال الشهر الجاي هيبقى رائع.",
-        "expected": {
-            "department": ["web"],
-            "priority": ["low", "medium"]
-        }
-    },
-    {
-        "id": 6,
-        "category": "Fake Urgency",
-        "message": "URGENT URGENT!! محتاج أغير باسورد الحساب بتاعي بس نسيت الإيميل!",
+        "id": 13,
+        "category": "Department - General/HR",
+        "message": "Are you guys hiring for software engineers?",
         "expected": {
             "department": ["general"],
-            "priority": ["low", "medium"]
+            "priority": ["low"]
         }
     },
     {
-        "id": 7,
-        "category": "Egyptian Dialect",
-        "message": "يا عم الموقع واقف خالص، مفيش حاجة بتفتح. دا إحنا بنخسر فلوس كتير كل دقيقة!",
+        "id": 14,
+        "category": "Commercial - High Value",
+        "message": "We are a Fortune 500 company looking for an enterprise contract for 1000 users.",
+        "expected": {
+            "department": ["commercial"],
+            "priority": ["high"]
+        }
+    },
+    {
+        "id": 15,
+        "category": "Sarcasm/Complaint",
+        "message": "Oh great, the site is down again on a Friday night. Amazing service.",
         "expected": {
             "department": ["web"],
             "priority": ["high"]
-        }
-    },
-    {
-        "id": 8,
-        "category": "Arabic + English Mix",
-        "message": "الـ AI model بتاعنا مش accurate، بيطلع results غلط في 40% من الحالات. ده بيأثر على الـ user experience بشكل سلبي.",
-        "expected": {
-            "department": ["ai"],
-            "priority": ["high"]
-        }
-    },
-    {
-        "id": 9,
-        "category": "Very Long Query",
-        "message": "السلام عليكم، أنا صاحب شركة تسويق إلكتروني وعندي مشكلة معقدة شوية. إحنا استخدمنا الموقع بتاعكم من 6 شهور، وكان شغال تمام، بس من أسبوعين بدأنا نلاحظ إن الـ chatbot مش بيفهم أسئلة العملاء زي زمان. مثلاً، لما عميل يسأل عن سعر منتج معين، البوت بيرد بحاجات مالهاش علاقة. جربنا نعمل refresh للصفحة، جربنا متصفحات تانية، نفس المشكلة. ده بيأثر على المبيعات بتاعتنا جداً. ممكن حد يساعدنا نحل المشكلة دي بسرعة لأن عندنا عرض كبير هيبدأ الأسبوع الجاي؟",
-        "expected": {
-            "department": ["ai"],
-            "priority": ["high"]
-        }
-    },
-    {
-        "id": 10,
-        "category": "No Context",
-        "message": "مش شغال",
-        "expected": {
-            "department": ["general"],
-            "priority": ["low", "medium"]
         }
     }
 ]
@@ -111,48 +156,54 @@ def run_test(test_case):
         # Send request
         response = requests.post(
             API_URL,
-            json={"message": test_case['message']},
+            json={"message": test_case['message'], "session_id": "test-suite"},
             timeout=TIMEOUT
         )
         
         if response.status_code == 200:
             result = response.json()
             
-            # Extract classification
-            department = result.get("escalation", {}).get("department", "N/A")
-            priority = result.get("escalation", {}).get("priority", "N/A")
-            escalated = result.get("escalation", {}).get("escalated", False)
+            action_actual = result.get("action")
+            text_actual = result.get("text", "")
             
-            # Check results
-            dept_correct = department in test_case["expected"]["department"]
-            priority_correct = priority in test_case["expected"]["priority"]
+            is_correct = False
             
-            print(f"\n✅ Response received")
-            print(f"Department: {department} {'✅' if dept_correct else '❌'}")
-            print(f"Priority: {priority} {'✅' if priority_correct else '❌'}")
-            print(f"Escalated: {escalated}")
+            # Check Action based testing (RAG/Ambiguous)
+            if "action" in test_case["expected"]:
+                action_match = action_actual == test_case["expected"]["action"]
+                content_match = test_case["expected"]["contains"].lower() in text_actual.lower() if "contains" in test_case["expected"] else True
+                is_correct = action_match and content_match
+                
+                print(f"\n✅ Response received")
+                print(f"Action: {action_actual} {'✅' if action_match else '❌'} (Expected: {test_case['expected']['action']})")
+                if "contains" in test_case["expected"]:
+                    print(f"Content Match: {'✅' if content_match else '❌'} (Searched: '{test_case['expected']['contains']}')")
+            
+            # Check Escalation based testing (Departments)
+            else:
+                department = result.get("escalation", {}).get("department", "N/A")
+                priority = result.get("escalation", {}).get("priority", "N/A")
+                
+                dept_correct = department in test_case["expected"]["department"]
+                priority_correct = priority in test_case["expected"]["priority"]
+                is_correct = dept_correct and priority_correct
+                
+                print(f"\n✅ Response received")
+                print(f"Department: {department} {'✅' if dept_correct else '❌'}")
+                print(f"Priority: {priority} {'✅' if priority_correct else '❌'}")
+            
             print(f"\nAI Response Preview:")
-            print(result.get("text", "")[:200] + "...")
+            print(text_actual[:200] + "...")
             
             return {
                 "test_id": test_case['id'],
                 "category": test_case['category'],
-                "department_actual": department,
-                "department_expected": test_case["expected"]["department"],
-                "department_correct": dept_correct,
-                "priority_actual": priority,
-                "priority_expected": test_case["expected"]["priority"],
-                "priority_correct": priority_correct,
-                "escalated": escalated,
-                "status": "PASS" if (dept_correct and priority_correct) else "FAIL"
+                "status": "PASS" if is_correct else "FAIL",
+                "actual": result
             }
         else:
             print(f"❌ API Error: {response.status_code}")
-            return {
-                "test_id": test_case['id'],
-                "status": "ERROR",
-                "error": f"HTTP {response.status_code}"
-            }
+            return {"test_id": test_case['id'], "status": "ERROR", "error": f"HTTP {response.status_code}"}
             
     except Exception as e:
         print(f"❌ Exception: {e}")
@@ -194,20 +245,21 @@ def main():
     print("="*80)
     
     for r in results:
-        if r.get("status") == "PASS":
-            print(f"\n✅ Test #{r['test_id']}: {r['category']}")
-            print(f"   Department: {r['department_actual']} (Expected: {r['department_expected']})")
-            print(f"   Priority: {r['priority_actual']} (Expected: {r['priority_expected']})")
-        elif r.get("status") == "FAIL":
-            print(f"\n❌ Test #{r['test_id']}: {r['category']}")
-            print(f"   Department: {r['department_actual']} ❌ (Expected: {r['department_expected']})")
-            print(f"   Priority: {r['priority_actual']} {'✅' if r['priority_correct'] else '❌'} (Expected: {r['priority_expected']})")
+        status_icon = "✅" if r.get("status") == "PASS" else "❌" if r.get("status") == "FAIL" else "⚠️"
+        print(f"\n{status_icon} Test #{r['test_id']}: {r['category']}")
+        if r.get("status") == "ERROR":
+            print(f"   Error: {r.get('error')}")
         else:
-            print(f"\n⚠️  Test #{r['test_id']}: ERROR - {r.get('error')}")
+            actual = r.get("actual", {})
+            action = actual.get("action")
+            print(f"   AI Action: {action}")
+            if action == "escalate":
+                esc = actual.get("escalation", {})
+                print(f"   Escalated To: {esc.get('department')} (Priority: {esc.get('priority')})")
     
     # Save results to file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"test_results_{timestamp}.json"
+    filename = f"test_results_prod_{timestamp}.json"
     
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=2)

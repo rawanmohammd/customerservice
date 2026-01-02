@@ -1,0 +1,262 @@
+[
+  {
+    "test_id": 1,
+    "category": "RAG - Password Reset",
+    "status": "PASS",
+    "actual": {
+      "action": "reply",
+      "text": "For password reset, click 'Forgot Password' on the login screen. A link will be sent to your email within 5 minutes.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 2,
+    "category": "RAG - Company Location",
+    "status": "PASS",
+    "actual": {
+      "action": "reply",
+      "text": "ZEdny Company HQ is located in New Cairo, Egypt. Contact us at hello@zedny.com or call +20-2-1234-5678.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 3,
+    "category": "RAG - Business Hours",
+    "status": "PASS",
+    "actual": {
+      "action": "reply",
+      "text": "Our working hours are from 9 AM to 5 PM, Sunday to Thursday.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 4,
+    "category": "RAG - Timeline",
+    "status": "PASS",
+    "actual": {
+      "action": "reply",
+      "text": "Project timelines vary by scope. A standard corporate website typically takes 4-6 weeks, while custom web applications may take 3-6 months.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 5,
+    "category": "Department - Web Bug",
+    "status": "FAIL",
+    "actual": {
+      "action": "reply",
+      "text": "I'm sorry to hear that. Could you please specify what exactly isn't working with the login button on mobile Chrome? (e.g., is there an error message, does it freeze, or does nothing happen at all?)",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 6,
+    "category": "Department - AI Service",
+    "status": "PASS",
+    "actual": {
+      "action": "escalate",
+      "text": "I've escalated your request to build a custom recommendation model for your e-commerce to our AI team. They will contact you to discuss further details.\n\n(Notification: Email sent to Rawan (Test Lead))\n\n(Internal: Assigned to Rawan (Test Lead) in ai)",
+      "report": {
+        "summary": "Custom rec model",
+        "department": "ai",
+        "priority": "medium",
+        "extracted_info": [
+          "Dept: AI",
+          "Priority: MEDIUM",
+          "Intent: sales",
+          "Reasoning: Service request for AI solution, no urgency or VIP indicators"
+        ],
+        "suggested_fix": "Investigate conversation history and logs."
+      },
+      "escalation": {
+        "department": "ai",
+        "priority": "medium",
+        "escalated": true
+      }
+    }
+  },
+  {
+    "test_id": 7,
+    "category": "Department - Commercial/Billing",
+    "status": "FAIL",
+    "actual": {
+      "action": "reply",
+      "text": "To upgrade your plan, you can find the bank transfer details on our website under the 'Billing' section or contact our finance department directly at finance@zedny.com for assistance.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 8,
+    "category": "Ambiguous/Multi-turn",
+    "status": "PASS",
+    "actual": {
+      "action": "reply",
+      "text": "I'm sorry to hear that. Could you please specify what exactly isn't working? (e.g., a specific page, a feature, or an error code)",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 9,
+    "category": "Department - Operations",
+    "status": "PASS",
+    "actual": {
+      "action": "escalate",
+      "text": "I've escalated the issue with your delivery tracking to our Operations team. They will investigate and get back to you with an update.\n\n(Notification: Email sent to Mohammed (Ops Manager))\n\n(Internal: Assigned to Mohammed (Ops Manager) in operations)",
+      "report": {
+        "summary": "Tracking issue",
+        "department": "operations",
+        "priority": "medium",
+        "extracted_info": [
+          "Dept: OPERATIONS",
+          "Priority: MEDIUM",
+          "Intent: support",
+          "Reasoning: Customer needs help with order tracking, which is an operational issue"
+        ],
+        "suggested_fix": "Investigate conversation history and logs."
+      },
+      "escalation": {
+        "department": "operations",
+        "priority": "medium",
+        "escalated": true
+      }
+    }
+  },
+  {
+    "test_id": 10,
+    "category": "Dialect - Egyptian",
+    "status": "FAIL",
+    "actual": {
+      "action": "reply",
+      "text": "Welcome! How can I help you today?",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 11,
+    "category": "Long Technical Query",
+    "status": "PASS",
+    "actual": {
+      "action": "escalate",
+      "text": "I've escalated the issue with the hydration error in your React frontend to our Web team. They will investigate the compatibility issues with Next.js 14 and the AI widget.",
+      "report": {
+        "summary": "Hydration error on Vercel",
+        "department": "web",
+        "priority": "high",
+        "extracted_info": [
+          "Dept: WEB",
+          "Priority: HIGH",
+          "Intent: support",
+          "Reasoning: Technical issue with React frontend and Next.js upgrade causing production errors"
+        ],
+        "suggested_fix": "Investigate conversation history and logs."
+      },
+      "escalation": {
+        "department": "web",
+        "priority": "high",
+        "escalated": true
+      }
+    }
+  },
+  {
+    "test_id": 12,
+    "category": "RAG - Maintenance",
+    "status": "FAIL",
+    "actual": {
+      "action": "reply",
+      "text": "Yes, we offer support and maintenance services to ensure your project continues to meet your business needs over time. We'll work with you to develop a support plan that aligns with your requirements.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 13,
+    "category": "Department - General/HR",
+    "status": "FAIL",
+    "actual": {
+      "action": "reply",
+      "text": "Yes, we are hiring for software engineers. You can check our careers page for the latest job openings and apply online.",
+      "report": null,
+      "escalation": {
+        "escalated": false
+      }
+    }
+  },
+  {
+    "test_id": 14,
+    "category": "Commercial - High Value",
+    "status": "FAIL",
+    "actual": {
+      "action": "escalate",
+      "text": "I've escalated your inquiry to our Enterprise Sales team. They will be in touch with you to discuss a customized solution for your company's needs.",
+      "report": {
+        "summary": "Fortune 500 contract",
+        "department": "general",
+        "priority": "high",
+        "extracted_info": [
+          "Dept: GENERAL",
+          "Priority: HIGH",
+          "Intent: sales",
+          "Reasoning: Fortune 500 indicates VIP status, enterprise contract inquiry for 1000 users"
+        ],
+        "suggested_fix": "Investigate conversation history and logs."
+      },
+      "escalation": {
+        "department": "general",
+        "priority": "high",
+        "escalated": true
+      }
+    }
+  },
+  {
+    "test_id": 15,
+    "category": "Sarcasm/Complaint",
+    "status": "PASS",
+    "actual": {
+      "action": "escalate",
+      "text": "I apologize for the inconvenience. I'm going to escalate this issue to our emergency support team to get the site back up as soon as possible.",
+      "report": {
+        "summary": "Site down",
+        "department": "web",
+        "priority": "high",
+        "extracted_info": [
+          "Dept: WEB",
+          "Priority: HIGH",
+          "Intent: complaint",
+          "Reasoning: Sarcasm indicates frustration, site being down = high priority"
+        ],
+        "suggested_fix": "Investigate conversation history and logs."
+      },
+      "escalation": {
+        "department": "web",
+        "priority": "high",
+        "escalated": true
+      }
+    }
+  }
+]
