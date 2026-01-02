@@ -19,6 +19,15 @@ export function ChatInterface() {
         scrollToBottom();
     }, [messages]);
 
+    // Persistent Session Management
+    const [sessionId] = useState(() => {
+        const saved = localStorage.getItem('zedny_chat_session');
+        if (saved) return saved;
+        const newId = crypto.randomUUID();
+        localStorage.setItem('zedny_chat_session', newId);
+        return newId;
+    });
+
     const handleSend = async () => {
         if (!input.trim()) return;
 
@@ -29,7 +38,7 @@ export function ChatInterface() {
         setIsTyping(true);
 
         try {
-            const response = await API.sendMessage(userText);
+            const response = await API.sendMessage(userText, sessionId);
 
             // Add AI response to store
             // Note: addMessage in store might need expansion for structured data, 

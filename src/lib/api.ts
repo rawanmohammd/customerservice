@@ -22,14 +22,14 @@ const getBaseUrl = () => {
 };
 
 export const API = {
-    async sendMessage(message: string, userId: string = "guest"): Promise<ChatResponse> {
+    async sendMessage(message: string, sessionId: string = "default"): Promise<ChatResponse> {
         // FastAPI expects trailing slash by default -> /chat/
         const url = `${getBaseUrl()}/chat/`;
 
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, user_id: userId })
+            body: JSON.stringify({ message, session_id: sessionId })
         });
 
         // Handle 307 Redirects explicitly if fetch doesn't
@@ -39,7 +39,7 @@ export const API = {
                 return (await fetch(newUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, user_id: userId })
+                    body: JSON.stringify({ message, session_id: sessionId })
                 })).json();
             }
         }
